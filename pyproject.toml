@@ -22,7 +22,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 packages = [
-  { include = "tfds", from = "src" }
+  { include = "tfdslib", from = "src" }
 ]
 
 [tool.poetry.group.dev.dependencies]
