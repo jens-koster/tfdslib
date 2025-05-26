@@ -16,3 +16,10 @@ https://github.com/jens-koster/the-free-data-stack/blob/main/spark/Dockerfile
 ## linting
 
     poetry run pre-commit run --files $(find src -type f)
+
+## build
+see readme for the devpi plugin for setting up devpi and poetry global configs the first time.
+
+Regular build and publish is then simply:
+    poetry build
+    poetry publish -r devpi
