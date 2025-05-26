@@ -5,7 +5,7 @@ from .config_file import (
     list_configs,
     read_config,
     strip_yaml,
-    write_config,
+    write_config_to_file,
 )
 
 __all__ = [
@@ -15,5 +15,5 @@ __all__ = [
     "list_configs",
     "read_config",
     "strip_yaml",
-    "write_config",
+    "write_config_to_file",
 ]

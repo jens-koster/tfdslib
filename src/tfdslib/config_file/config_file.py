@@ -55,7 +55,7 @@ def read_config(config_name: str) -> dict[str, Any]:
     return config
 
 
-def write_config(config_name: str, config_data: dict[str, Any]) -> None:
+def write_config_to_file(config_name: str, config_data: dict[str, Any]) -> None:
     """Write a configuration file, meta key is stripped if present."""
     file_path = get_file_name(config_name)
     config_data.pop("meta", None)

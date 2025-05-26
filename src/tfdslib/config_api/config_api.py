@@ -6,9 +6,10 @@ import requests
 from tfdslib.config_file import strip_yaml
 
 
-def get_config_url() -> str:
+def get_config_url(config_name: Union[None, str] = None) -> str:
     """Get the config api server url."""
-    return os.environ.get("TFDS_CONFIG_URL", "http://tfds-config:8005/api/configs")
+    base_url = os.environ.get("TFDS_CONFIG_URL", "http://tfds-config:8005/api/configs")
+    return f"{base_url}/{strip_yaml(config_name)}" if config_name else base_url
 
 
 def is_api_avaiable() -> bool:
@@ -25,7 +26,7 @@ def get_full_config_response(config_name: str) -> dict[str, Any]:
     if config_name is None:
         raise ValueError("Config name cannot be None")
 
-    config_url = get_config_url() + "/" + strip_yaml(config_name)
+    config_url = get_config_url(config_name)
 
     response = requests.get(config_url)
     response.raise_for_status()
@@ -49,3 +50,8 @@ def get_meta(config_name: str) -> Union[None, dict[str, Any]]:
     """Get the meta data from the config api response."""
     meta = get_full_config_response(config_name=config_name).get("meta")
     return cast(dict[str, Any], meta) if meta else None
+
+
+def write_config_to_api(config_name: str, config: dict[str, Any]) -> None:
+    response = requests.post(get_config_url(config_name), json=config)
+    response.raise_for_status()
