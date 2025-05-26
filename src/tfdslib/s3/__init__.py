@@ -1,8 +1,8 @@
 from .s3 import (
     bucket_exists,
-    file_exists,
     create_bucket,
     delete_bucket,
+    file_exists,
     get_file,
     get_s3_client,
     is_s3_service_available,

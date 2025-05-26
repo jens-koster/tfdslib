@@ -46,7 +46,7 @@ def bucket_exists(bucket_name: str) -> bool:
     return False
 
 
-def file_exists(bucket_name, file_name:str, prefix:Union[str, None]=None)->bool:
+def file_exists(bucket_name: str, file_name: str, prefix: Union[str, None] = None) -> bool:
     """Check if a file exists on S3."""
     try:
         key = f"{prefix}/{file_name}" if prefix else file_name
@@ -58,6 +58,7 @@ def file_exists(bucket_name, file_name:str, prefix:Union[str, None]=None)->bool:
         else:
             print(f"Error checking file: {e}")
             raise
+
 
 def create_bucket(bucket_name: str) -> bool:
     """Create an S3 bucket if does not exist."""
@@ -83,11 +84,11 @@ def delete_bucket(bucket_name: str) -> None:
     s3_client.delete_bucket(Bucket=bucket_name)
 
 
-def put_file(local_path: str, bucket: str, prefix: str, file_name: str) -> bool:
+def put_file(local_path: str, bucket: str, file_name: str, prefix: Union[str, None] = None) -> bool:
     """Upload a file to S3."""
 
     s3_client = get_s3_client()
-    s3_key = prefix + "/" + file_name
+    s3_key = prefix + "/" + file_name if prefix else file_name
 
     try:
         text = f"{local_path} to bucket '{bucket}' as '{s3_key}'"
@@ -100,9 +101,9 @@ def put_file(local_path: str, bucket: str, prefix: str, file_name: str) -> bool:
         return False
 
 
-def get_file(local_path: str, bucket: str, prefix: str, file_name: str) -> bool:
+def get_file(local_path: str, bucket: str, file_name: str, prefix: Union[str, None] = None) -> bool:
     """Download a file from S3."""
-    source_object_name = f"{prefix}/{file_name}"
+    source_object_name = f"{prefix}/{file_name}" if prefix else file_name
     text = f"{source_object_name} to {local_path}"
     print(f"Intitating download: {text}.")
     try:
