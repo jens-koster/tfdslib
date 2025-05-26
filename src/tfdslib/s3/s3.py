@@ -46,7 +46,20 @@ def bucket_exists(bucket_name: str) -> bool:
     return False
 
 
-def create_s3_bucket(bucket_name: str) -> bool:
+def file_exists(bucket_name, file_name:str, prefix:Union[str, None]=None)->bool:
+    """Check if a file exists on S3."""
+    try:
+        key = f"{prefix}/{file_name}" if prefix else file_name
+        get_s3_client().head_object(Bucket=bucket_name, Key=key)
+        return True
+    except ClientError as e:
+        if e.response["Error"]["Code"] == "404":
+            return False
+        else:
+            print(f"Error checking file: {e}")
+            raise
+
+def create_bucket(bucket_name: str) -> bool:
     """Create an S3 bucket if does not exist."""
 
     try:
@@ -62,7 +75,7 @@ def create_s3_bucket(bucket_name: str) -> bool:
         return False
 
 
-def delete_s3_bucket(bucket_name: str) -> None:
+def delete_bucket(bucket_name: str) -> None:
     """Delete S3 bucket if it exists."""
     if not bucket_exists(bucket_name):
         return

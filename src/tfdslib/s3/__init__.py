@@ -1,7 +1,8 @@
 from .s3 import (
     bucket_exists,
-    create_s3_bucket,
-    delete_s3_bucket,
+    file_exists,
+    create_bucket,
+    delete_bucket,
     get_file,
     get_s3_client,
     is_s3_service_available,
@@ -13,8 +14,9 @@ from .s3 import (
 
 __all__ = [
     "bucket_exists",
-    "create_s3_bucket",
-    "delete_s3_bucket",
+    "file_exists",
+    "create_bucket",
+    "delete_bucket",
     "get_file",
     "get_s3_client",
     "is_s3_service_available",

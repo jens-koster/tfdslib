@@ -61,13 +61,13 @@ def test_bucket_exists_false(monkeypatch, mock_s3_client):
 
 def test_create_s3_bucket_exists(monkeypatch):
     monkeypatch.setattr(s3_mod, "bucket_exists", lambda b: True)
-    assert s3_mod.create_s3_bucket("bucket1")
+    assert s3_mod.create_bucket("bucket1")
 
 
 def test_create_s3_bucket_success(monkeypatch, mock_s3_client):
     monkeypatch.setattr("tfdslib.s3.s3.bucket_exists", lambda b: False)
     monkeypatch.setattr("tfdslib.s3.s3.get_s3_client", lambda: mock_s3_client)
-    assert s3_mod.create_s3_bucket("bucket1")
+    assert s3_mod.create_bucket("bucket1")
     mock_s3_client.create_bucket.assert_called_once_with(Bucket="bucket1")
 
 
@@ -75,13 +75,13 @@ def test_create_s3_bucket_client_error(monkeypatch, mock_s3_client):
     monkeypatch.setattr("tfdslib.s3.s3.bucket_exists", lambda b: False)
     mock_s3_client.create_bucket.side_effect = ClientError({"Error": {}}, "CreateBucket")
     monkeypatch.setattr("tfdslib.s3.s3.get_s3_client", lambda: mock_s3_client)
-    assert not s3_mod.create_s3_bucket("bucket1")
+    assert not s3_mod.create_bucket("bucket1")
 
 
 def test_delete_s3_bucket_exists(monkeypatch, mock_s3_client):
     monkeypatch.setattr("tfdslib.s3.s3.bucket_exists", lambda b: True)
     monkeypatch.setattr("tfdslib.s3.s3.get_s3_client", lambda: mock_s3_client)
-    s3_mod.delete_s3_bucket("bucket1")
+    s3_mod.delete_bucket("bucket1")
     mock_s3_client.delete_bucket.assert_called_once_with(Bucket="bucket1")
 
 
@@ -89,7 +89,7 @@ def test_delete_s3_bucket_not_exists(monkeypatch):
     monkeypatch.setattr("tfdslib.s3.s3.bucket_exists", lambda b: False)
     mock_get_s3_client = MagicMock()
     monkeypatch.setattr("tfdslib.s3.s3.get_s3_client", mock_get_s3_client)
-    s3_mod.delete_s3_bucket("bucket1")
+    s3_mod.delete_bucket("bucket1")
     mock_get_s3_client.assert_not_called()
 
 

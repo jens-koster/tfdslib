@@ -99,7 +99,7 @@ def test_read_config_no_config_key(temp_root):
 
 def test_write_and_read_config(temp_root):
     data = {"config": {"foo": "bar"}, "meta": "should be removed"}
-    config_file.write_config("mycfg", data.copy())
+    config_file.write_config_to_file("mycfg", data.copy())
     path = os.path.join(temp_root, "config", "mycfg.yaml")
     with open(path) as f:
         loaded = yaml.safe_load(f)
