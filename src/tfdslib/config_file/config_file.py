@@ -55,15 +55,15 @@ def read_config(config_name: str) -> dict[str, Any]:
     return config
 
 
-def write_config_to_file(config_name: str, config_data: dict[str, Any]) -> None:
+def write_config_to_file(config_name: str, config: dict[str, Any]) -> None:
     """Write a configuration file, meta key is stripped if present."""
     file_path = get_file_name(config_name)
-    config_data.pop("meta", None)
+    config.pop("meta", None)
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     with open(file_path, "w") as file:
         # Lock the file to prevent race conditions
         fcntl.flock(file, fcntl.LOCK_EX)
-        yaml.dump(config_data, file, default_flow_style=False)
+        yaml.dump(config, file, default_flow_style=False)
         fcntl.flock(file, fcntl.LOCK_UN)
 
 

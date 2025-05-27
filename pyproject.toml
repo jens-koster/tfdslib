@@ -1,6 +1,6 @@
 [project]
 name = "tfdslib"
-version = "0.1.1"
+version = "0.1.8"
 description = "tfds utilities for use in cli, plugins and notebooks"
 authors = [
     {name = "tfds@jensbox.se"}
@@ -9,7 +9,6 @@ license = {text = "gnu general public license v3"}
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "typer>=0.15.0",
     "boto3 (>=1.38.19,<2.0.0)",
     "requests (>=2.32.3,<3.0.0)",
     "nbformat (>=5.10.4,<6.0.0)",

@@ -84,6 +84,16 @@ def delete_bucket(bucket_name: str) -> None:
     s3_client.delete_bucket(Bucket=bucket_name)
 
 
+def delete_prefix(bucket: str, prefix: str) -> None:
+    """Delete all files with a given prefix in a bucket."""
+    s3 = get_s3_client()
+    paginator = s3.get_paginator("list_objects_v2")
+    for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+        if "Contents" in page:
+            objects = [{"Key": obj["Key"]} for obj in page["Contents"]]
+            s3.delete_objects(Bucket=bucket, Delete={"Objects": objects})
+
+
 def put_file(local_path: str, bucket: str, file_name: str, prefix: Union[str, None] = None) -> bool:
     """Upload a file to S3."""
 

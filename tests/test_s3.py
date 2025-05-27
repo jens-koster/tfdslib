@@ -95,7 +95,7 @@ def test_delete_s3_bucket_not_exists(monkeypatch):
 
 def test_put_file_success(monkeypatch, mock_s3_client):
     monkeypatch.setattr("tfdslib.s3.s3.get_s3_client", lambda: mock_s3_client)
-    result = s3_mod.put_file("local.txt", "bucket", "prefix", "file.txt")
+    result = s3_mod.put_file(local_path="local.txt", bucket="bucket", prefix="prefix", file_name="file.txt")
     assert result
     mock_s3_client.upload_file.assert_called_once_with("local.txt", "bucket", "prefix/file.txt")
 
@@ -103,13 +103,13 @@ def test_put_file_success(monkeypatch, mock_s3_client):
 def test_put_file_failure(monkeypatch, mock_s3_client):
     mock_s3_client.upload_file.side_effect = Exception("fail")
     monkeypatch.setattr(s3_mod, "get_s3_client", lambda: mock_s3_client)
-    result = s3_mod.put_file("local.txt", "bucket", "prefix", "file.txt")
+    result = s3_mod.put_file(local_path="local.txt", bucket="bucket", prefix="prefix", file_name="file.txt")
     assert not result
 
 
 def test_get_file_success(monkeypatch, mock_s3_client):
     monkeypatch.setattr("tfdslib.s3.s3.get_s3_client", lambda: mock_s3_client)
-    result = s3_mod.get_file("local.txt", "bucket", "prefix", "file.txt")
+    result = s3_mod.get_file(local_path="local.txt", bucket="bucket", prefix="prefix", file_name="file.txt")
     assert result
     mock_s3_client.download_file.assert_called_once_with("bucket", "prefix/file.txt", "local.txt")
 

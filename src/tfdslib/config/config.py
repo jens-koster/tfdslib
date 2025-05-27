@@ -24,6 +24,6 @@ def set_config(config_name: str, config: dict[str, Any]) -> None:
     if config.get("config") is None:
         raise ValueError("Config must have config key.")
     if is_api_avaiable():
-        write_config_to_api(config_name)
+        write_config_to_api(config_name=config_name, config=config)
     else:
-        write_config_to_file(config_name)
+        write_config_to_file(config_name=config_name, config=config)
