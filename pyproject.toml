@@ -1,6 +1,6 @@
 [project]
 name = "tfdslib"
-version = "0.1.8"
+version = "0.1.9"
 description = "tfds utilities for use in cli, plugins and notebooks"
 authors = [
     {name = "tfds@jensbox.se"}
