@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import Any, Union, cast
 
@@ -5,19 +6,30 @@ import requests
 
 from tfdslib.config_file import strip_yaml
 
+logger = logging.getLogger(__name__)
+
 
 def get_config_url(config_name: Union[None, str] = None) -> str:
     """Get the config api server url."""
-    base_url = os.environ.get("TFDS_CONFIG_URL", "http://tfds-config:8005/api/configs")
-    return f"{base_url}/{strip_yaml(config_name)}" if config_name else base_url
+    # this must have the / at the end, otherwise the url will not work.
+    base_url = os.environ.get("TFDS_CONFIG_URL", "http://tfds-config:8005/api/configs/")
+    if not base_url.endswith("/"):
+        base_url += "/"
+    # this can't have a slash at the end
+    return f"{base_url}{strip_yaml(config_name)}" if config_name else base_url
 
 
 def is_api_avaiable() -> bool:
     """Check if the config api server is available."""
     try:
-        response = requests.head(get_config_url())
+        url = get_config_url()
+
+        response = requests.head(url)
+        if response.status_code != 200:
+            logger.error(f"Config API server on {url} returned {response.status_code}, {response.text}")
         return response.status_code == 200
-    except requests.exceptions.RequestException:
+    except requests.exceptions.RequestException as ex:
+        logger.error(f"Exception while calling config server on {url} : {ex}")
         return False
 
 

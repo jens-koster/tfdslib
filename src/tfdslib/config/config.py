@@ -1,7 +1,10 @@
+import logging
 from typing import Any, cast
 
 from tfdslib.config_api import get_config_from_api, is_api_avaiable, write_config_to_api
 from tfdslib.config_file import get_config_from_file, write_config_to_file
+
+logger = logging.getLogger(__name__)
 
 
 def get_config(config_name: str) -> dict[str, Any]:
@@ -10,8 +13,10 @@ def get_config(config_name: str) -> dict[str, Any]:
         raise ValueError("A config_name must be provided.")
 
     if is_api_avaiable():
+        logger.debug("Using API to get config: %s", config_name)
         cfg = get_config_from_api(config_name)
     else:
+        logger.debug("Reading config from file: %s", config_name)
         cfg = get_config_from_file(config_name)
     # Tthose functions are typed correctly, but mypy still won't accept it.
     # Try to remove the cast when we're on newer python

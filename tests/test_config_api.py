@@ -28,12 +28,12 @@ def mock_requests_get_valid_config():
 
 
 def test_get_config_url_default():
-    assert config_api.get_config_url() == "http://tfds-config:8005/api/configs"
+    assert config_api.get_config_url() == "http://tfds-config:8005/api/configs/"
 
 
 def test_get_config_url_env(monkeypatch):
     monkeypatch.setenv("TFDS_CONFIG_URL", "http://custom-url")
-    assert config_api.get_config_url() == "http://custom-url"
+    assert config_api.get_config_url() == "http://custom-url/"
 
 
 def test_is_api_avaiable_true(monkeypatch):

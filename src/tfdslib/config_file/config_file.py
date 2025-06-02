@@ -44,7 +44,7 @@ def read_config(config_name: str) -> dict[str, Any]:
         raise ValueError("Config name cannot be None")
     file_path = get_file_name(config_name)
     if not os.path.isfile(file_path):
-        raise ValueError(f"Config '{config_name}' not found in config nor secrets.")
+        raise ValueError(f"Config '{config_name}' not found in config nor secrets. Looked in {file_path}.")
 
     with open(file_path, "r") as file:
         config: dict[str, str] = yaml.safe_load(file)
