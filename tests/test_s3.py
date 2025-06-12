@@ -140,7 +140,7 @@ def test_list_files_returns_keys(monkeypatch):
 def test_make_date_prefix():
     date = dt.date(2024, 5, 25)
     prefix = s3_mod.make_date_prefix(date)
-    assert prefix == "2024/2024-05/25/"
+    assert prefix == "2024/2024-05/25"
 
 
 def test_list_files_empty(monkeypatch):
@@ -162,7 +162,7 @@ def test_list_files_for_dates(monkeypatch):
     )
     dates = [dt.date(2024, 5, 25), dt.date(2024, 5, 26)]
     bucket = "mybucket"
-    result = s3_mod.list_files_for_dates(dates, bucket)
+    result = s3_mod.as_urls(s3_mod.list_files_for_dates(dates, bucket), bucket)
     expected = [
         "s3a://mybucket/prefix/2024-05-25/file1.txt",
         "s3a://mybucket/prefix/2024-05-25/file2.txt",

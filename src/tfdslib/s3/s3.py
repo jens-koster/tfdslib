@@ -98,7 +98,9 @@ def put_file(local_path: str, bucket: str, file_name: str, prefix: Union[str, No
     """Upload a file to S3."""
 
     s3_client = get_s3_client()
-    s3_key = prefix + "/" + file_name if prefix else file_name
+    if prefix and not prefix.endswith("/"):
+        prefix = prefix + "/"
+    s3_key = prefix + file_name if prefix else file_name
 
     try:
         text = f"{local_path} to bucket '{bucket}' as '{s3_key}'"
@@ -131,7 +133,11 @@ def make_date_prefix(date: Union[dt.datetime, dt.date]) -> str:
     year = date.strftime("%Y")
     month = date.strftime("%m")
     day = date.strftime("%d")
-    return f"{year}/{year}-{month}/{day}/"
+    return f"{year}/{year}-{month}/{day}"
+
+
+def as_urls(files: list[str], bucket_name: str) -> list[str]:
+    return [f"s3a://{bucket_name}/{f}" for f in files]
 
 
 def list_files(prefix: str, bucket_name: str) -> list[str]:
@@ -155,4 +161,4 @@ def list_files_for_dates(dates: list[Union[dt.datetime, dt.date]], bucket_name: 
         prefix = make_date_prefix(date)
         files = list_files(prefix, bucket_name)
         all_files.extend(files)
-    return [f"s3a://{bucket_name}/{f}" for f in all_files]
+    return all_files

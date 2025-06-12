@@ -1,4 +1,5 @@
 from .s3 import (
+    as_urls,
     bucket_exists,
     create_bucket,
     delete_bucket,
@@ -26,4 +27,5 @@ __all__ = [
     "list_files_for_dates",
     "make_date_prefix",
     "put_file",
+    "as_urls",
 ]

@@ -1,6 +1,7 @@
 import os
 import shutil
 import tempfile
+from pathlib import Path
 
 import pytest
 import yaml
@@ -14,7 +15,7 @@ def temp_root(monkeypatch):
     monkeypatch.setenv("TFDS_ROOT_PATH", temp_dir)
     os.makedirs(os.path.join(temp_dir, "config"), exist_ok=True)
     os.makedirs(os.path.join(temp_dir, "secrets"), exist_ok=True)
-    yield temp_dir
+    yield Path(temp_dir)
     shutil.rmtree(temp_dir)
 
 
@@ -27,16 +28,16 @@ def test_strip_yaml():
 
 def test_get_root_folder_env(monkeypatch):
     monkeypatch.setenv("TFDS_ROOT_PATH", "/tmp/testtfds")
-    assert config_file.get_root_folder() == "/tmp/testtfds"
+    assert config_file.get_root_folder() == Path("/tmp/testtfds")
 
 
 def test_get_root_folder_default(monkeypatch):
     monkeypatch.delenv("TFDS_ROOT_PATH", raising=False)
-    assert config_file.get_root_folder() == "/opt/tfds/"
+    assert config_file.get_root_folder() == Path("/opt/tfds/")
 
 
 def test_get_file_name_prefers_secrets(temp_root):
-    secrets_path = os.path.join(temp_root, "secrets", "mycfg.yaml")
+    secrets_path = temp_root / "secrets" / "mycfg.yaml"
     with open(secrets_path, "w") as f:
         f.write("config: {foo: bar}")
     result = config_file.get_file_name("mycfg")
@@ -44,15 +45,15 @@ def test_get_file_name_prefers_secrets(temp_root):
 
 
 def test_get_file_name_fallback_config(temp_root):
-    config_path = os.path.join(temp_root, "config", "mycfg.yaml")
+    config_path = temp_root / "config" / "mycfg.yaml"
     with open(config_path, "w") as f:
         f.write("config: {foo: bar}")
     result = config_file.get_file_name("mycfg")
-    assert result == config_path
+    assert result == Path(config_path)
 
 
 def test_config_exists_true(temp_root):
-    config_path = os.path.join(temp_root, "config", "exists.yaml")
+    config_path = temp_root / "config" / "exists.yaml"
     with open(config_path, "w") as f:
         f.write("config: {foo: bar}")
     assert config_file.config_exists("exists")
@@ -68,7 +69,7 @@ def test_config_exists_none():
 
 
 def test_read_config_success(temp_root):
-    config_path = os.path.join(temp_root, "config", "mycfg.yaml")
+    config_path = temp_root / "config" / "mycfg.yaml"
     data = {"config": {"foo": "bar"}}
     with open(config_path, "w") as f:
         yaml.dump(data, f)
@@ -122,14 +123,14 @@ def test_delete_config_not_found(temp_root, capsys):
 
 
 def test_list_files(temp_root):
-    path = os.path.join(temp_root, "config")
-    with open(os.path.join(path, "a.yaml"), "w") as f:
+    path = temp_root / "config"
+    with open(path / "a.yaml", "w") as f:
         f.write("foo")
-    with open(os.path.join(path, "b.txt"), "w") as f:
+    with open(path / "b.txt", "w") as f:
         f.write("bar")
     files = config_file.list_files(path)
-    assert "a.yaml" in files
-    assert "b.txt" in files
+    assert Path(path / "a.yaml") in files
+    assert Path(path / "b.txt") in files
 
 
 def test_list_files_not_found():

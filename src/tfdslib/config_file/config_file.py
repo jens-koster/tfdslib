@@ -2,13 +2,17 @@
 
 import fcntl
 import os
-from typing import Any, cast
+from pathlib import Path
+from typing import Any, Union, cast
 
 import yaml
 
 
-def strip_yaml(config_name: str) -> str:
+def strip_yaml(config_name: Union[str, Path]) -> str:
     """Strip the .yaml or .yml extension from the config name."""
+    if isinstance(config_name, Path):
+        config_name = config_name.name
+
     if config_name.endswith(".yaml"):
         return config_name[:-5]
     if config_name.endswith(".yml"):
@@ -16,18 +20,18 @@ def strip_yaml(config_name: str) -> str:
     return config_name
 
 
-def get_root_folder() -> str:
+def get_root_folder() -> Path:
     """Get the tfds root folder (defaulting to /opt/tfds)."""
-    return os.environ.get("TFDS_ROOT_PATH", "/opt/tfds/")
+    return Path(os.environ.get("TFDS_ROOT_PATH", "/opt/tfds/"))
 
 
-def get_file_name(config_name: str) -> str:
+def get_file_name(config_name: str) -> Path:
     """Get a file path for a config, searching in secrets and config folders."""
     config_name = strip_yaml(config_name)
-    attempt = os.path.join(get_root_folder(), "secrets", config_name + ".yaml")
-    if os.path.isfile(attempt):
+    attempt = get_root_folder() / "secrets" / (config_name + ".yaml")
+    if attempt.is_file():
         return attempt
-    return os.path.join(get_root_folder(), "config", config_name + ".yaml")
+    return get_root_folder() / "config" / (config_name + ".yaml")
 
 
 def config_exists(config_name: str) -> bool:
@@ -35,7 +39,7 @@ def config_exists(config_name: str) -> bool:
     if config_name is None:
         raise ValueError("Config name cannot be None")
     file_path = get_file_name(config_name)
-    return os.path.isfile(file_path)
+    return file_path.is_file()
 
 
 def read_config(config_name: str) -> dict[str, Any]:
@@ -43,7 +47,7 @@ def read_config(config_name: str) -> dict[str, Any]:
     if config_name is None:
         raise ValueError("Config name cannot be None")
     file_path = get_file_name(config_name)
-    if not os.path.isfile(file_path):
+    if not file_path.is_file():
         raise ValueError(f"Config '{config_name}' not found in config nor secrets. Looked in {file_path}.")
 
     with open(file_path, "r") as file:
@@ -59,7 +63,7 @@ def write_config_to_file(config_name: str, config: dict[str, Any]) -> None:
     """Write a configuration file, meta key is stripped if present."""
     file_path = get_file_name(config_name)
     config.pop("meta", None)
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    file_path.parent.mkdir(parents=True, exist_ok=True)
     with open(file_path, "w") as file:
         # Lock the file to prevent race conditions
         fcntl.flock(file, fcntl.LOCK_EX)
@@ -70,25 +74,27 @@ def write_config_to_file(config_name: str, config: dict[str, Any]) -> None:
 def delete_config(config_name: str) -> None:
     """Delete a configuration file."""
     file_path = get_file_name(config_name)
-    if os.path.exists(file_path):
-        os.remove(file_path)
+    if file_path.exists():
+        file_path.unlink()
     else:
         print(f"Configuration '{file_path}' not found.")
 
 
-def list_files(path: str) -> list[str]:
+def list_files(path: Union[str, Path]) -> list[Path]:
     """List all files in a directory."""
     try:
-        return [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+        if isinstance(path, str):
+            path = Path(path)
+        return [f for f in path.iterdir() if f.is_file()]
     except FileNotFoundError:
         return []
 
 
 def list_configs() -> list[str]:
     """List all available configurations (including the secrets)."""
-    cfg_list = list_files(os.path.join(get_root_folder(), "config"))
-    sec_list = list_files(os.path.join(get_root_folder(), "secrets"))
-    return [strip_yaml(f) for f in cfg_list + sec_list if f.endswith(".yaml") or f.endswith(".yml")]
+    cfg_list = list_files(get_root_folder() / "config")
+    sec_list = list_files(get_root_folder() / "secrets")
+    return [strip_yaml(f.name) for f in cfg_list + sec_list if f.suffix in (".yaml", ".yml")]
 
 
 def get_config_from_file(config_name: str) -> dict[str, Any]:

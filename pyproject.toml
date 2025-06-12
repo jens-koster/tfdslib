@@ -1,6 +1,6 @@
 [project]
 name = "tfdslib"
-version = "0.1.19"
+version = "0.1.20"
 description = "tfds utilities for use in cli, plugins and notebooks"
 authors = [
     {name = "tfds@jensbox.se"}
@@ -34,6 +34,13 @@ ruff = "^0.11.10"
 
 [tool.poetry.extras]
 spark = ["pyspark"]
+
+[tool.pytest.ini_options]
+norecursedirs = [
+    "tfds",
+    "the-free-data-stack",
+    "pipe-dreams"
+]
 
 [tool.black]
 line-length = 88
